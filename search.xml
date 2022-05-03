@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Unity-IOC</title>
+    <url>/2022/05/03/Unity-IOC/</url>
+    <content><![CDATA[<p>[TOC]</p>
+<h2 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h2><p>一般前端开发会包含诸如<code>TimeManager</code>、<code>EventManager</code>等大量的<code>管理器(Manager)</code>.为了使得项目能方便引用这些管理器,大部分的做法为将这些管理器的方法实现为静态方法(<code>static</code>)或将这些管理器做为单例模式实现.</p>
+]]></content>
+      <categories>
+        <category>Unity3D</category>
+        <category>代码设计与架构</category>
+        <category>Code Design &amp; Architecture</category>
+      </categories>
+      <tags>
+        <tag>Unity3D</tag>
+        <tag>C#</tag>
+        <tag>代码设计</tag>
+        <tag>架构</tag>
+        <tag>Code Design</tag>
+        <tag>Architecture</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hello-world</title>
+    <url>/2022/05/03/hello-world/</url>
+    <content><![CDATA[<h1 id="Welcome"><a href="#Welcome" class="headerlink" title="Welcome"></a>Welcome</h1><h2 id="Description"><a href="#Description" class="headerlink" title="Description"></a>Description</h2><p>This is a place to share my game development technical, tips etc.</p>
+<h2 id="Test"><a href="#Test" class="headerlink" title="Test"></a>Test</h2><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Hello</span></span><br><span class="line">&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Say</span>()</span></span><br><span class="line">	&#123;</span><br><span class="line">		Debug.Log(<span class="string">&quot;Hello world!&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h1><h2 id="Plan"><a href="#Plan" class="headerlink" title="Plan"></a>Plan</h2><p>I will wrote some technical articles in this site.</p>
+]]></content>
+  </entry>
+</search>
