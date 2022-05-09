@@ -1,144 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Unity-IOC-Event</title>
-    <url>/2022/05/10/Unity-IOC-Event/</url>
-    <content><![CDATA[<p>此类库为<code>IOC</code>库的拓展,旨在实现一个自动注册事件的事件管理器.不再需要像传统项目中自己手动<code>Register</code>或<code>Unregister</code>事件.</p>
-<h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><h2 id="添加引用"><a href="#添加引用" class="headerlink" title="添加引用"></a>添加引用</h2><p>通过Package Manager添加如下依赖:</p>
-<table>
-<thead>
-<tr>
-<th>Package</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://github.com/kakashiio/Unity-Reflection.git#1.0.0">https://github.com/kakashiio/Unity-Reflection.git#1.0.0</a></td>
-<td><code>Reflection</code>库</td>
-</tr>
-<tr>
-<td><a href="https://github.com/kakashiio/Unity-IOC.git#1.0.0">https://github.com/kakashiio/Unity-IOC.git#1.0.0</a></td>
-<td><code>IOC</code>库</td>
-</tr>
-<tr>
-<td><a href="https://github.com/kakashiio/Unity-IOC-Event.git#1.0.0">https://github.com/kakashiio/Unity-IOC-Event.git#1.0.0</a></td>
-<td><code>IOC-Event</code>库</td>
-</tr>
-</tbody></table>
-<span id="more"></span>
-
-<h2 id="创建一个UnityIOCContainer"><a href="#创建一个UnityIOCContainer" class="headerlink" title="创建一个UnityIOCContainer"></a>创建一个UnityIOCContainer</h2><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">ITypeContainer typeContainer = <span class="keyword">new</span> TypeContainerCollection(<span class="keyword">new</span> List&lt;ITypeContainer&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(Assembly.GetExecutingAssembly()),</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(<span class="keyword">typeof</span>(IOCComponent).Assembly),</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(<span class="keyword">typeof</span>(UnityIOCContainer).Assembly),</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(<span class="keyword">typeof</span>(EventManager).Assembly)</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">new</span> UnityIOCContainer(typeContainer);</span><br></pre></td></tr></table></figure>
-
-<p>将上述代码添加到你应用程序启动的位置.</p>
-<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>假设我们希望实现如下游戏流程:</p>
-<ol>
-<li>当<code>IOCContainer</code>初始化完成时,触发进度为0的<code>EVT_INIT_PROGRESS</code>事件和<code>EVT_INIT</code>事件</li>
-<li><code>GameFlowController</code>监听所有事件并做出响应<ol>
-<li>当收到<code>EVT_INIT_PROGRESS</code>事件,打印进度.</li>
-<li>当收到<code>EVT_INIT</code>事件,打印信息并开始加载场景,在场景完成加载时,触发<code>EVT_LOAD_INIT_SCENE</code>事件.</li>
-<li>当收到<code>EVT_LOAD_INIT_SCENE</code>事件,打印信息并触发进度为100的<code>EVT_INIT_PROGRESS</code>事件.</li>
-</ol>
-</li>
-</ol>
-<h3 id="先定义GameEvent事件"><a href="#先定义GameEvent事件" class="headerlink" title="先定义GameEvent事件"></a>先定义<code>GameEvent</code>事件</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">GameEvent</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> EVT_INIT = <span class="keyword">nameof</span>(EVT_INIT);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> EVT_LOAD_INIT_SCENE = <span class="keyword">nameof</span>(EVT_LOAD_INIT_SCENE);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> EVT_INIT_PROGRESS = <span class="keyword">nameof</span>(EVT_INIT_PROGRESS);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="定义Game以响应IOCContainer的生命周期"><a href="#定义Game以响应IOCContainer的生命周期" class="headerlink" title="定义Game以响应IOCContainer的生命周期"></a>定义<code>Game</code>以响应<code>IOCContainer</code>的生命周期</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">class</span> <span class="title">Game</span> : <span class="title">IInstanceLifeCycle</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">Autowired</span>]</span><br><span class="line">    <span class="keyword">private</span> EventManager _EventManager;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">BeforePropertiesOrFieldsSet</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AfterPropertiesOrFieldsSet</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AfterAllInstanceInit</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        _EventManager.FireEvent(GameEvent.EVT_INIT_PROGRESS, <span class="number">0f</span>);</span><br><span class="line">        _EventManager.FireEvent(GameEvent.EVT_INIT);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="定义GameFlowController响应事件"><a href="#定义GameFlowController响应事件" class="headerlink" title="定义GameFlowController响应事件"></a>定义<code>GameFlowController</code>响应事件</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">class</span> <span class="title">GameFlowController</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">Autowired</span>]</span><br><span class="line">    <span class="keyword">private</span> AssetLoader _AssetLoader;</span><br><span class="line">    [<span class="meta">Autowired</span>]</span><br><span class="line">    <span class="keyword">private</span> EventManager _EventManager;</span><br><span class="line">    </span><br><span class="line">    [<span class="meta">Event(GameEvent.EVT_INIT)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnInit</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.LogError(<span class="string">&quot;GameFlow OnInit&quot;</span>);</span><br><span class="line">        _AssetLoader.LoadScene(<span class="string">&quot;ScenePath&quot;</span>, (scene) =&gt; _EventManager.FireEvent(GameEvent.EVT_LOAD_INIT_SCENE, scene));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    [<span class="meta">Event(GameEvent.EVT_INIT_PROGRESS)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnProgress</span>(<span class="params"><span class="built_in">float</span> progress</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.LogError(<span class="string">&quot;GameFlow OnProgress &quot;</span> + progress);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    [<span class="meta">Event(GameEvent.EVT_LOAD_INIT_SCENE)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnEnterInitScene</span>(<span class="params">Scene scene</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.LogError(<span class="string">$&quot;GameFlow OnEnterInitScene scene=<span class="subst">&#123;scene&#125;</span>&quot;</span>);</span><br><span class="line">        _EventManager.FireEvent(GameEvent.EVT_INIT_PROGRESS, <span class="number">100f</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="定义AssetLoader模拟资源加载"><a href="#定义AssetLoader模拟资源加载" class="headerlink" title="定义AssetLoader模拟资源加载"></a>定义<code>AssetLoader</code>模拟资源加载</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">class</span> <span class="title">AssetLoader</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">LoadScene</span>(<span class="params"><span class="built_in">string</span> scenePath, Action&lt;Scene&gt; onLoadedScene</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        onLoadedScene(SceneManager.GetActiveScene());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="所有工作完成"><a href="#所有工作完成" class="headerlink" title="所有工作完成"></a>所有工作完成</h2><p>运行场景会发现控制台中按顺序出现如下输出:</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GameFlow OnProgress 0</span><br><span class="line">GameFlow OnInit</span><br><span class="line">GameFlow OnEnterInitScene scene=UnityEngine.SceneManagement.Scene</span><br><span class="line">GameFlow OnProgress 100</span><br></pre></td></tr></table></figure>
-
-<p>很神奇,对吧!<code>IOCContainer</code>和<code>EventManager</code>帮助你将<code>IOCContainer</code>中所有带有<code>Event</code> attribute的方法注册到<code>EventManager</code>中,因此当调用<code>EventManager</code>的<code>FireEvent</code>时,对应的方法将会被自动调用.</p>
-<p>完整的Package工程地址在<a href="https://github.com/kakashiio/Unity-IOC-Event">https://github.com/kakashiio/Unity-IOC-Event</a></p>
-<h1 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h1><p>感谢百忙之中阅读本文,如果觉得我的文章帮到了你,欢迎:转载、关注git、为仓库增加star等.你的简单回馈将是我继续创作的动力.</p>
-]]></content>
-      <categories>
-        <category>Unity3D</category>
-        <category>代码设计与架构</category>
-        <category>C#</category>
-        <category>代码设计与架构</category>
-      </categories>
-      <tags>
-        <tag>Unity3D</tag>
-        <tag>C#</tag>
-        <tag>代码设计</tag>
-        <tag>架构</tag>
-        <tag>Ioc</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Unity-IOC-Unity</title>
-    <url>/2022/05/09/Unity-IOC-Unity/</url>
-    <content><![CDATA[<p>此类库为<code>IOC</code>库的拓展,旨在提升Unity项目开发便捷性甚至性能.以更优雅、便捷和高性能的方式响应<code>Unity</code>提供的各种事件回调.</p>
-<h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><h2 id="添加引用"><a href="#添加引用" class="headerlink" title="添加引用"></a>添加引用</h2><p>通过Package Manager添加如下依赖:</p>
-<table>
-<thead>
-<tr>
-<th>Package</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td><a href="https://github.com/kakashiio/Unity-Reflection.git#1.0.0">https://github.com/kakashiio/Unity-Reflection.git#1.0.0</a></td>
-<td><code>Reflection</code>库</td>
-</tr>
-<tr>
-<td><a href="https://github.com/kakashiio/Unity-IOC.git#1.0.0">https://github.com/kakashiio/Unity-IOC.git#1.0.0</a></td>
-<td><code>IOC</code>库</td>
-</tr>
-<tr>
-<td><a href="https://github.com/kakashiio/Unity-IOC-Unity.git#1.0.0">https://github.com/kakashiio/Unity-IOC-Unity.git#1.0.0</a></td>
-<td><code>IOC-Unity</code>库</td>
-</tr>
-</tbody></table>
-<span id="more"></span>
-
-<h2 id="创建一个UnityIOCContainer"><a href="#创建一个UnityIOCContainer" class="headerlink" title="创建一个UnityIOCContainer"></a>创建一个UnityIOCContainer</h2><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">ITypeContainer typeContainer = <span class="keyword">new</span> TypeContainerCollection(<span class="keyword">new</span> List&lt;ITypeContainer&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(Assembly.GetExecutingAssembly()),</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(<span class="keyword">typeof</span>(UnityIOCContainer).Assembly),</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(<span class="keyword">typeof</span>(IOCContainer).Assembly)</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">new</span> UnityIOCContainer(typeContainer);</span><br></pre></td></tr></table></figure>
-
-<p>将上述代码添加到你应用程序启动的位置.</p>
-<h2 id="根据需要实现一下Unity相关的接口"><a href="#根据需要实现一下Unity相关的接口" class="headerlink" title="根据需要实现一下Unity相关的接口"></a>根据需要实现一下Unity相关的接口</h2><ul>
-<li>IUnityUpdate</li>
-<li>IUnityLateUpdate</li>
-<li>IUnityFixedUpdate</li>
-<li>IUnityGUI</li>
-<li>IUnityApplication</li>
-<li>IUnityEditor</li>
-</ul>
-<p>假设你希望每帧调用一段代码.传统的方式为创建一个<code>MonoBehaviour</code>,在该<code>MonoBehaviour</code>的<code>Update</code>方法中增加你的方法.而通过上面<code>添加引用</code>引入的<code>IOC</code>库和<code>IOC-Unity</code>之后,可以使用以下代码实现:</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">NormalClassButNotMonoBehaviour</span> : <span class="title">IUnityUpdate</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Update</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 需要每帧执行的代码.</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这样就轻松实现了上述需求.</p>
-<p><code>IUnityUpdate</code>的代码为<code>IOC-Unity</code>库提供,其代码非常简单,如下所示:</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IUnityUpdate</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Update</span>()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>这种方式甚至比传统方式性能更高!</p>
-</blockquote>
-<h2 id="其他组件"><a href="#其他组件" class="headerlink" title="其他组件"></a>其他组件</h2><h3 id="CoroutineManager"><a href="#CoroutineManager" class="headerlink" title="CoroutineManager"></a>CoroutineManager</h3><p>用于帮助更方便执行协程.如果你希望执行一些协程,那么可以编写如下代码:</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HttpManager4Demo</span> : <span class="title">IUnityGUI</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">Autowired</span>]</span><br><span class="line">    <span class="keyword">private</span> CoroutineManager _CoroutineManager;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Get</span>(<span class="params"><span class="built_in">string</span> url, Action&lt;<span class="built_in">string</span>&gt; onGet</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _CoroutineManager.StartCoroutine(_StartGet(url, onGet));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> IEnumerator _StartGet(<span class="built_in">string</span> url, Action&lt;<span class="built_in">string</span>&gt; onGet, Action&lt;<span class="built_in">string</span>&gt; onError = <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> unityWebRequest.SendWebRequest();</span><br><span class="line">        <span class="keyword">if</span> (unityWebRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            onGet?.Invoke(unityWebRequest.downloadHandler.text);    </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            onError?.Invoke(unityWebRequest.error);                </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;Get&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            Get(<span class="string">&quot;https://unity3d.io&quot;</span>, (msg) =&gt; Debug.Log(msg));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h1 id="未来"><a href="#未来" class="headerlink" title="未来"></a>未来</h1><p>会增加更多Unity API和组件支持以加速游戏开发. 如果你有更好建议,也期待你指出.</p>
-<p>完整的Package工程地址在<a href="https://github.com/kakashiio/Unity-IOC-Unity">https://github.com/kakashiio/Unity-IOC-Unity</a></p>
-<h1 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h1><p>感谢百忙之中阅读本文,如果觉得我的文章帮到了你,欢迎:转载、关注git、为仓库增加star等.你的简单回馈将是我继续创作的动力.</p>
-]]></content>
-      <categories>
-        <category>Unity3D</category>
-        <category>代码设计与架构</category>
-        <category>C#</category>
-        <category>代码设计与架构</category>
-      </categories>
-      <tags>
-        <tag>Unity3D</tag>
-        <tag>C#</tag>
-        <tag>代码设计</tag>
-        <tag>架构</tag>
-        <tag>Ioc</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Unity-IOC</title>
     <url>/2022/05/03/Unity-IOC/</url>
     <content><![CDATA[<h1 id="本文目的"><a href="#本文目的" class="headerlink" title="本文目的"></a>本文目的</h1><p>向大家介绍:</p>
@@ -259,6 +121,144 @@
 <td><a href="https://github.com/kakashiio/Unity-IOC">https://github.com/kakashiio/Unity-IOC</a></td>
 </tr>
 </tbody></table>
+<h1 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h1><p>感谢百忙之中阅读本文,如果觉得我的文章帮到了你,欢迎:转载、关注git、为仓库增加star等.你的简单回馈将是我继续创作的动力.</p>
+]]></content>
+      <categories>
+        <category>Unity3D</category>
+        <category>代码设计与架构</category>
+        <category>C#</category>
+        <category>代码设计与架构</category>
+      </categories>
+      <tags>
+        <tag>Unity3D</tag>
+        <tag>C#</tag>
+        <tag>代码设计</tag>
+        <tag>架构</tag>
+        <tag>Ioc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity-IOC-Unity</title>
+    <url>/2022/05/09/Unity-IOC-Unity/</url>
+    <content><![CDATA[<p>此类库为<code>IOC</code>库的拓展,旨在提升Unity项目开发便捷性甚至性能.以更优雅、便捷和高性能的方式响应<code>Unity</code>提供的各种事件回调.</p>
+<h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><h2 id="添加引用"><a href="#添加引用" class="headerlink" title="添加引用"></a>添加引用</h2><p>通过Package Manager添加如下依赖:</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/kakashiio/Unity-Reflection.git#1.0.0">https://github.com/kakashiio/Unity-Reflection.git#1.0.0</a></td>
+<td><code>Reflection</code>库</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kakashiio/Unity-IOC.git#1.0.0">https://github.com/kakashiio/Unity-IOC.git#1.0.0</a></td>
+<td><code>IOC</code>库</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kakashiio/Unity-IOC-Unity.git#1.0.0">https://github.com/kakashiio/Unity-IOC-Unity.git#1.0.0</a></td>
+<td><code>IOC-Unity</code>库</td>
+</tr>
+</tbody></table>
+<span id="more"></span>
+
+<h2 id="创建一个UnityIOCContainer"><a href="#创建一个UnityIOCContainer" class="headerlink" title="创建一个UnityIOCContainer"></a>创建一个UnityIOCContainer</h2><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">ITypeContainer typeContainer = <span class="keyword">new</span> TypeContainerCollection(<span class="keyword">new</span> List&lt;ITypeContainer&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(Assembly.GetExecutingAssembly()),</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(<span class="keyword">typeof</span>(UnityIOCContainer).Assembly),</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(<span class="keyword">typeof</span>(IOCContainer).Assembly)</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">new</span> UnityIOCContainer(typeContainer);</span><br></pre></td></tr></table></figure>
+
+<p>将上述代码添加到你应用程序启动的位置.</p>
+<h2 id="根据需要实现一下Unity相关的接口"><a href="#根据需要实现一下Unity相关的接口" class="headerlink" title="根据需要实现一下Unity相关的接口"></a>根据需要实现一下Unity相关的接口</h2><ul>
+<li>IUnityUpdate</li>
+<li>IUnityLateUpdate</li>
+<li>IUnityFixedUpdate</li>
+<li>IUnityGUI</li>
+<li>IUnityApplication</li>
+<li>IUnityEditor</li>
+</ul>
+<p>假设你希望每帧调用一段代码.传统的方式为创建一个<code>MonoBehaviour</code>,在该<code>MonoBehaviour</code>的<code>Update</code>方法中增加你的方法.而通过上面<code>添加引用</code>引入的<code>IOC</code>库和<code>IOC-Unity</code>之后,可以使用以下代码实现:</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">NormalClassButNotMonoBehaviour</span> : <span class="title">IUnityUpdate</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Update</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">// 需要每帧执行的代码.</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样就轻松实现了上述需求.</p>
+<p><code>IUnityUpdate</code>的代码为<code>IOC-Unity</code>库提供,其代码非常简单,如下所示:</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title">IUnityUpdate</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Update</span>()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这种方式甚至比传统方式性能更高!</p>
+</blockquote>
+<h2 id="其他组件"><a href="#其他组件" class="headerlink" title="其他组件"></a>其他组件</h2><h3 id="CoroutineManager"><a href="#CoroutineManager" class="headerlink" title="CoroutineManager"></a>CoroutineManager</h3><p>用于帮助更方便执行协程.如果你希望执行一些协程,那么可以编写如下代码:</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">HttpManager4Demo</span> : <span class="title">IUnityGUI</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">Autowired</span>]</span><br><span class="line">    <span class="keyword">private</span> CoroutineManager _CoroutineManager;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Get</span>(<span class="params"><span class="built_in">string</span> url, Action&lt;<span class="built_in">string</span>&gt; onGet</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        _CoroutineManager.StartCoroutine(_StartGet(url, onGet));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> IEnumerator _StartGet(<span class="built_in">string</span> url, Action&lt;<span class="built_in">string</span>&gt; onGet, Action&lt;<span class="built_in">string</span>&gt; onError = <span class="literal">null</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        UnityWebRequest unityWebRequest = UnityWebRequest.Get(url);</span><br><span class="line">        <span class="keyword">yield</span> <span class="keyword">return</span> unityWebRequest.SendWebRequest();</span><br><span class="line">        <span class="keyword">if</span> (unityWebRequest.result == UnityWebRequest.Result.Success)</span><br><span class="line">        &#123;</span><br><span class="line">            onGet?.Invoke(unityWebRequest.downloadHandler.text);    </span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            onError?.Invoke(unityWebRequest.error);                </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnGUI</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (GUILayout.Button(<span class="string">&quot;Get&quot;</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            Get(<span class="string">&quot;https://unity3d.io&quot;</span>, (msg) =&gt; Debug.Log(msg));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="未来"><a href="#未来" class="headerlink" title="未来"></a>未来</h1><p>会增加更多Unity API和组件支持以加速游戏开发. 如果你有更好建议,也期待你指出.</p>
+<p>完整的Package工程地址在<a href="https://github.com/kakashiio/Unity-IOC-Unity">https://github.com/kakashiio/Unity-IOC-Unity</a></p>
+<h1 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h1><p>感谢百忙之中阅读本文,如果觉得我的文章帮到了你,欢迎:转载、关注git、为仓库增加star等.你的简单回馈将是我继续创作的动力.</p>
+]]></content>
+      <categories>
+        <category>Unity3D</category>
+        <category>代码设计与架构</category>
+        <category>C#</category>
+        <category>代码设计与架构</category>
+      </categories>
+      <tags>
+        <tag>Unity3D</tag>
+        <tag>C#</tag>
+        <tag>代码设计</tag>
+        <tag>架构</tag>
+        <tag>Ioc</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Unity-IOC-Event</title>
+    <url>/2022/05/10/Unity-IOC-Event/</url>
+    <content><![CDATA[<p>此类库为<code>IOC</code>库的拓展,旨在实现一个自动注册事件的事件管理器.不再需要像传统项目中自己手动<code>Register</code>或<code>Unregister</code>事件.</p>
+<h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><h2 id="添加引用"><a href="#添加引用" class="headerlink" title="添加引用"></a>添加引用</h2><p>通过Package Manager添加如下依赖:</p>
+<table>
+<thead>
+<tr>
+<th>Package</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/kakashiio/Unity-Reflection.git#1.0.0">https://github.com/kakashiio/Unity-Reflection.git#1.0.0</a></td>
+<td><code>Reflection</code>库</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kakashiio/Unity-IOC.git#1.0.0">https://github.com/kakashiio/Unity-IOC.git#1.0.0</a></td>
+<td><code>IOC</code>库</td>
+</tr>
+<tr>
+<td><a href="https://github.com/kakashiio/Unity-IOC-Event.git#1.0.0">https://github.com/kakashiio/Unity-IOC-Event.git#1.0.0</a></td>
+<td><code>IOC-Event</code>库</td>
+</tr>
+</tbody></table>
+<span id="more"></span>
+
+<h2 id="创建一个IOCContainer"><a href="#创建一个IOCContainer" class="headerlink" title="创建一个IOCContainer"></a>创建一个IOCContainer</h2><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">ITypeContainer typeContainer = <span class="keyword">new</span> TypeContainerCollection(<span class="keyword">new</span> List&lt;ITypeContainer&gt;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(Assembly.GetExecutingAssembly()),</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(<span class="keyword">typeof</span>(IOCComponent).Assembly),</span><br><span class="line">        <span class="keyword">new</span> TypeContainer(<span class="keyword">typeof</span>(EventManager).Assembly)</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> IOCContainerBuilder(typeContainer).Build();</span><br></pre></td></tr></table></figure>
+
+<p>将上述代码添加到你应用程序启动的位置.</p>
+<h2 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h2><p>假设我们希望实现如下游戏流程:</p>
+<ol>
+<li>当<code>IOCContainer</code>初始化完成时,触发进度为0的<code>EVT_INIT_PROGRESS</code>事件和<code>EVT_INIT</code>事件</li>
+<li><code>GameFlowController</code>监听所有事件并做出响应<ol>
+<li>当收到<code>EVT_INIT_PROGRESS</code>事件,打印进度.</li>
+<li>当收到<code>EVT_INIT</code>事件,打印信息并开始加载场景,在场景完成加载时,触发<code>EVT_LOAD_INIT_SCENE</code>事件.</li>
+<li>当收到<code>EVT_LOAD_INIT_SCENE</code>事件,打印信息并触发进度为100的<code>EVT_INIT_PROGRESS</code>事件.</li>
+</ol>
+</li>
+</ol>
+<h3 id="先定义GameEvent事件"><a href="#先定义GameEvent事件" class="headerlink" title="先定义GameEvent事件"></a>先定义<code>GameEvent</code>事件</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">GameEvent</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> EVT_INIT = <span class="keyword">nameof</span>(EVT_INIT);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> EVT_LOAD_INIT_SCENE = <span class="keyword">nameof</span>(EVT_LOAD_INIT_SCENE);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">const</span> <span class="built_in">string</span> EVT_INIT_PROGRESS = <span class="keyword">nameof</span>(EVT_INIT_PROGRESS);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="定义Game以响应IOCContainer的生命周期"><a href="#定义Game以响应IOCContainer的生命周期" class="headerlink" title="定义Game以响应IOCContainer的生命周期"></a>定义<code>Game</code>以响应<code>IOCContainer</code>的生命周期</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">class</span> <span class="title">Game</span> : <span class="title">IInstanceLifeCycle</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">Autowired</span>]</span><br><span class="line">    <span class="keyword">private</span> EventManager _EventManager;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">BeforePropertiesOrFieldsSet</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AfterPropertiesOrFieldsSet</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">AfterAllInstanceInit</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        _EventManager.FireEvent(GameEvent.EVT_INIT_PROGRESS, <span class="number">0f</span>);</span><br><span class="line">        _EventManager.FireEvent(GameEvent.EVT_INIT);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="定义GameFlowController响应事件"><a href="#定义GameFlowController响应事件" class="headerlink" title="定义GameFlowController响应事件"></a>定义<code>GameFlowController</code>响应事件</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">class</span> <span class="title">GameFlowController</span></span><br><span class="line">&#123;</span><br><span class="line">    [<span class="meta">Autowired</span>]</span><br><span class="line">    <span class="keyword">private</span> AssetLoader _AssetLoader;</span><br><span class="line">    [<span class="meta">Autowired</span>]</span><br><span class="line">    <span class="keyword">private</span> EventManager _EventManager;</span><br><span class="line">    </span><br><span class="line">    [<span class="meta">Event(GameEvent.EVT_INIT)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnInit</span>()</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.LogError(<span class="string">&quot;GameFlow OnInit&quot;</span>);</span><br><span class="line">        _AssetLoader.LoadScene(<span class="string">&quot;ScenePath&quot;</span>, (scene) =&gt; _EventManager.FireEvent(GameEvent.EVT_LOAD_INIT_SCENE, scene));</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    [<span class="meta">Event(GameEvent.EVT_INIT_PROGRESS)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnProgress</span>(<span class="params"><span class="built_in">float</span> progress</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.LogError(<span class="string">&quot;GameFlow OnProgress &quot;</span> + progress);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    [<span class="meta">Event(GameEvent.EVT_LOAD_INIT_SCENE)</span>]</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">OnEnterInitScene</span>(<span class="params">Scene scene</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        Debug.LogError(<span class="string">$&quot;GameFlow OnEnterInitScene scene=<span class="subst">&#123;scene&#125;</span>&quot;</span>);</span><br><span class="line">        _EventManager.FireEvent(GameEvent.EVT_INIT_PROGRESS, <span class="number">100f</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="定义AssetLoader模拟资源加载"><a href="#定义AssetLoader模拟资源加载" class="headerlink" title="定义AssetLoader模拟资源加载"></a>定义<code>AssetLoader</code>模拟资源加载</h3><figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">[<span class="meta">IOCComponent</span>]</span><br><span class="line"><span class="keyword">class</span> <span class="title">AssetLoader</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">LoadScene</span>(<span class="params"><span class="built_in">string</span> scenePath, Action&lt;Scene&gt; onLoadedScene</span>)</span></span><br><span class="line">    &#123;</span><br><span class="line">        onLoadedScene(SceneManager.GetActiveScene());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="所有工作完成"><a href="#所有工作完成" class="headerlink" title="所有工作完成"></a>所有工作完成</h2><p>运行场景会发现控制台中按顺序出现如下输出:</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">GameFlow OnProgress 0</span><br><span class="line">GameFlow OnInit</span><br><span class="line">GameFlow OnEnterInitScene scene=UnityEngine.SceneManagement.Scene</span><br><span class="line">GameFlow OnProgress 100</span><br></pre></td></tr></table></figure>
+
+<p>很神奇,对吧!<code>IOCContainer</code>和<code>EventManager</code>帮助你将<code>IOCContainer</code>中所有带有<code>Event</code> attribute的方法注册到<code>EventManager</code>中,因此当调用<code>EventManager</code>的<code>FireEvent</code>时,对应的方法将会被自动调用.</p>
+<p>完整的Package工程地址在<a href="https://github.com/kakashiio/Unity-IOC-Event">https://github.com/kakashiio/Unity-IOC-Event</a></p>
 <h1 id="致谢"><a href="#致谢" class="headerlink" title="致谢"></a>致谢</h1><p>感谢百忙之中阅读本文,如果觉得我的文章帮到了你,欢迎:转载、关注git、为仓库增加star等.你的简单回馈将是我继续创作的动力.</p>
 ]]></content>
       <categories>
