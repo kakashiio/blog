@@ -33,8 +33,8 @@
       switchTab();
       window.addEventListener('hashchange', switchTab, false);
   })();
-  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.1.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="Game Development Site" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item is-active" href="/">主页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于我</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/kakashiio"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-05-09T17:57:10.000Z" title="2022/5/10 01:57:10">2022-05-10</time>发表</span><span class="level-item"><time dateTime="2022-05-09T18:17:23.639Z" title="2022/5/10 02:17:23">2022-05-10</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/Unity3D/">Unity3D</a><span> / </span><a class="link-muted" href="/categories/Unity3D/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%9E%B6%E6%9E%84/">代码设计与架构</a><span> / </span><a class="link-muted" href="/categories/C/">C#</a><span> / </span><a class="link-muted" href="/categories/C/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%9E%B6%E6%9E%84/">代码设计与架构</a></span><span class="level-item">4 分钟读完 (大约638个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/2022/05/10/Unity-IOC-Event/">Unity-IOC-Event</a></h1><div class="content"><p>此类库为<code>IOC</code>库的拓展,旨在实现一个自动注册事件的事件管理器.不再需要像传统项目中自己手动<code>Register</code>或<code>Unregister</code>事件.</p>
-<h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><h2 id="添加引用"><a href="#添加引用" class="headerlink" title="添加引用"></a>添加引用</h2><p>通过Package Manager添加如下依赖:</p>
+  </script><!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.1.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container navbar-container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/avatar.png" alt="Game Development Site" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item is-active" href="/">主页</a><a class="navbar-item" href="/archives">归档</a><a class="navbar-item" href="/categories">分类</a><a class="navbar-item" href="/tags">标签</a><a class="navbar-item" href="/about">关于我</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/kakashiio"><i class="fab fa-github"></i></a><a class="navbar-item search" title="搜索" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-05-09T17:57:10.000Z" title="2022/5/10 01:57:10">2022-05-10</time>发表</span><span class="level-item"><time dateTime="2022-05-14T15:15:32.438Z" title="2022/5/14 23:15:32">2022-05-14</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/Unity3D/">Unity3D</a><span> / </span><a class="link-muted" href="/categories/Unity3D/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%9E%B6%E6%9E%84/">代码设计与架构</a><span> / </span><a class="link-muted" href="/categories/C/">C#</a><span> / </span><a class="link-muted" href="/categories/C/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%9E%B6%E6%9E%84/">代码设计与架构</a></span><span class="level-item">9 分钟读完 (大约1354个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/2022/05/10/Unity-IOC-Event/">Unity-IOC-Event</a></h1><div class="content"><p>此类库为<code>IOC</code>库的拓展,旨在实现一个自动注册事件的事件管理器.不再需要像传统项目中自己手动<code>Register</code>或<code>Unregister</code>事件.</p>
+<h1 id="添加引用"><a href="#添加引用" class="headerlink" title="添加引用"></a>添加引用</h1><p>通过Package Manager添加如下依赖:</p>
 <table>
 <thead>
 <tr>
@@ -54,7 +54,33 @@
 <td><a target="_blank" rel="noopener" href="https://github.com/kakashiio/Unity-IOC-Event.git#1.0.0">https://github.com/kakashiio/Unity-IOC-Event.git#1.0.0</a></td>
 <td><code>IOC-Event</code>库</td>
 </tr>
-</tbody></table></div><a class="article-more button is-small is-size-7" href="/2022/05/10/Unity-IOC-Event/#more">阅读更多</a></article></div><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-05-08T19:30:06.000Z" title="2022/5/9 03:30:06">2022-05-09</time>发表</span><span class="level-item"><time dateTime="2022-05-09T01:30:35.554Z" title="2022/5/9 09:30:35">2022-05-09</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/Unity3D/">Unity3D</a><span> / </span><a class="link-muted" href="/categories/Unity3D/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%9E%B6%E6%9E%84/">代码设计与架构</a><span> / </span><a class="link-muted" href="/categories/C/">C#</a><span> / </span><a class="link-muted" href="/categories/C/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%9E%B6%E6%9E%84/">代码设计与架构</a></span><span class="level-item">4 分钟读完 (大约552个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/2022/05/09/Unity-IOC-Unity/">Unity-IOC-Unity</a></h1><div class="content"><p>此类库为<code>IOC</code>库的拓展,旨在提升Unity项目开发便捷性甚至性能.以更优雅、便捷和高性能的方式响应<code>Unity</code>提供的各种事件回调.</p>
+</tbody></table>
+<h1 id="示例1-全局事件基础"><a href="#示例1-全局事件基础" class="headerlink" title="示例1:全局事件基础"></a>示例1:全局事件基础</h1><p>假设我们希望实现如下游戏流程:</p>
+<ol>
+<li>当<code>IOCContainer</code>初始化完成时,触发<code>EventInit</code>事件</li>
+<li><code>GameFlowController</code>监听所有事件并做出响应<ol>
+<li>当收到<code>EventInit</code>事件时<ol>
+<li>打印<code>[GameFlow] OnInit</code></li>
+<li>触发<code>EventFinishInit</code>事件</li>
+</ol>
+</li>
+<li>当收到<code>EventFinishInit</code>事件时<ol>
+<li>打印<code>[GameFlow] OnFinishInit</code></li>
+<li>触发<code>EventLoadingMain</code>,此时进度为0</li>
+<li>进行场景加载</li>
+</ol>
+</li>
+<li>当收到<code>EventLoadingMain</code>事件时<ol>
+<li>打印<code>[GameFlow] OnLoadingMain 进度值</code></li>
+</ol>
+</li>
+<li>当收到<code>EventLoadedScene</code>事件时<ol>
+<li>打印<code>[GameFlow] OnEnterScene scene=当前激活的场景</code></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol></div><a class="article-more button is-small is-size-7" href="/2022/05/10/Unity-IOC-Event/#more">阅读更多</a></article></div><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item"><time dateTime="2022-05-08T19:30:06.000Z" title="2022/5/9 03:30:06">2022-05-09</time>发表</span><span class="level-item"><time dateTime="2022-05-09T01:30:35.554Z" title="2022/5/9 09:30:35">2022-05-09</time>更新</span><span class="level-item"><a class="link-muted" href="/categories/Unity3D/">Unity3D</a><span> / </span><a class="link-muted" href="/categories/Unity3D/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%9E%B6%E6%9E%84/">代码设计与架构</a><span> / </span><a class="link-muted" href="/categories/C/">C#</a><span> / </span><a class="link-muted" href="/categories/C/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%9E%B6%E6%9E%84/">代码设计与架构</a></span><span class="level-item">4 分钟读完 (大约552个字)</span></div></div><h1 class="title is-3 is-size-4-mobile"><a class="link-muted" href="/2022/05/09/Unity-IOC-Unity/">Unity-IOC-Unity</a></h1><div class="content"><p>此类库为<code>IOC</code>库的拓展,旨在提升Unity项目开发便捷性甚至性能.以更优雅、便捷和高性能的方式响应<code>Unity</code>提供的各种事件回调.</p>
 <h1 id="入门"><a href="#入门" class="headerlink" title="入门"></a>入门</h1><h2 id="添加引用"><a href="#添加引用" class="headerlink" title="添加引用"></a>添加引用</h2><p>通过Package Manager添加如下依赖:</p>
 <table>
 <thead>
